@@ -8,7 +8,7 @@ from ocr_engine import extract_text_from_image
 from ai_parser import parse_ocr_with_ai
 from confidence_engine import process_extracted_data
 from schemas import PackageData, ExtractedField
-from rules import check_mrp
+from rules import evaluate_package, overall_status
 
 app = FastAPI(title="Legal Metrology Automated Inspector API")
 
@@ -50,27 +50,29 @@ async def inspect_image(file: UploadFile = File(...)):
         structured = process_extracted_data(ai_raw, ocr_blocks)
 
         # 4. Map to Rules Schema
-        mrp_field = ExtractedField(**structured["mrp"]) if structured.get("mrp") else None
-        net_qty_field = ExtractedField(**structured["net_quantity"]) if structured.get("net_quantity") else None
+        fields = {key: ExtractedField(**value) for key, value in structured.items()}
 
         pkg_data = PackageData(
             session_id=f"session_{file.filename}",
-            mrp=mrp_field,
-            net_quantity=net_qty_field
+            commodity_name=fields["commodity_name"],
+            net_quantity=fields["net_quantity"],
+            mfg_date=fields["mfg_date"],
+            mrp=fields["mrp"],
+            manufacturer=fields["manufacturer"]
         )
 
         # 5. Evaluate Rules
-        mrp_rule = check_mrp(pkg_data)
+        rule_results = evaluate_package(pkg_data)
 
         # Clean temp file
         if os.path.exists(file_path):
             os.remove(file_path)
 
         return {
-            "status": "success",
+            "status": overall_status(rule_results),
             "extracted_data": structured,
             "rules_evaluation": [
-                mrp_rule.dict()
+                result.dict() for result in rule_results
             ]
         }
 

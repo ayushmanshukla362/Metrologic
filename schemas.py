@@ -1,22 +1,33 @@
-from pydantic import BaseModel
-from typing import Optional
+from typing import Any, List, Optional
 
-# Ek field ka data kaisa dikhega
+from pydantic import BaseModel, Field
+
+
 class ExtractedField(BaseModel):
-    field_key: str
-    value: Optional[str] = None
-    unit: Optional[str] = None
-    confidence: float
+    """A backend-owned representation of one AI-extracted package field."""
 
-# Pure package ka data
+    field_key: str
+    value: Optional[Any] = None
+    unit: Optional[str] = None
+    inclusive_of_taxes: Optional[bool] = None
+    raw_source: str = ""
+    source_block_ids: List[str] = Field(default_factory=list)
+    confidence: float = 0.0
+
+
 class PackageData(BaseModel):
     session_id: str
-    mrp: Optional[ExtractedField] = None
+    commodity_name: Optional[ExtractedField] = None
     net_quantity: Optional[ExtractedField] = None
+    mfg_date: Optional[ExtractedField] = None
+    mrp: Optional[ExtractedField] = None
+    manufacturer: Optional[ExtractedField] = None
+    is_food_product: Optional[bool] = None
 
-# Rule check ka final result
+
 class RuleResult(BaseModel):
     rule_id: str
     requirement: str
-    status: str  # PASS, FAIL, ya REVIEW_REQUIRED
+    status: str  # PASS, FAIL, or REVIEW_REQUIRED
     reason: str
+    evidence: List[str] = Field(default_factory=list)
