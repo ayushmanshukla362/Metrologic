@@ -1,0 +1,11 @@
+{
+  "session_id": "sess_002",
+  "overall_status": "REVIEW_REQUIRED",
+  "evaluations": [
+    { "rule_id": "LM-PCR-6-1-b", "requirement": "Generic/Common Commodity Name", "status": "PASS", "reason": "", "evidence": ["img1:block2"] },
+    { "rule_id": "LM-PCR-6-1-c", "requirement": "Net Quantity", "status": "PASS", "reason": "", "evidence": ["img1:block4"] },
+    { "rule_id": "LM-PCR-6-1-d", "requirement": "Date of Manufacture", "status": "PASS", "reason": "", "evidence": ["img2:block3"] },
+    { "rule_id": "LM-PCR-6-1-e", "requirement": "Maximum Retail Price (MRP)", "status": "REVIEW_REQUIRED", "reason": "Low extraction confidence (0.63)", "evidence": ["img1:block7"] },
+    { "rule_id": "LM-PCR-6-1-a", "requirement": "Manufacturer Details", "status": "PASS", "reason": "", "evidence": ["img2:block8"] }
+  ]
+}
