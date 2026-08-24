@@ -97,3 +97,52 @@ def test_get_nonexistent_session_returns_404(client):
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Inspection session not found"}
+
+
+# ---------------------------------------------------------------------------
+# CORS tests
+# ---------------------------------------------------------------------------
+
+PRODUCTION_ORIGIN = "https://metrologic-frontend.onrender.com"
+LOCAL_ORIGINS = [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+]
+DISALLOWED_ORIGIN = "https://evil-site.example.com"
+
+
+@pytest.mark.parametrize(
+    "origin",
+    [PRODUCTION_ORIGIN, *LOCAL_ORIGINS],
+)
+def test_cors_allowed_origins_receive_acao_header(client, origin):
+    """Allowed origins get the Access-Control-Allow-Origin header echoed back."""
+    response = client.get(
+        "/api/health",
+        headers={"Origin": origin},
+    )
+    assert response.status_code == 200
+    assert response.headers.get("access-control-allow-origin") == origin
+
+
+def test_cors_disallowed_origin_does_not_receive_acao_header(client):
+    """Unrelated origins must NOT receive the Access-Control-Allow-Origin header."""
+    response = client.get(
+        "/api/health",
+        headers={"Origin": DISALLOWED_ORIGIN},
+    )
+    assert response.status_code == 200
+    assert "access-control-allow-origin" not in response.headers
+
+
+def test_cors_production_origin_preflight(client):
+    """OPTIONS preflight for the production frontend origin is accepted."""
+    response = client.options(
+        "/api/health",
+        headers={
+            "Origin": PRODUCTION_ORIGIN,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "Content-Type",
+        },
+    )
+    assert response.headers.get("access-control-allow-origin") == PRODUCTION_ORIGIN
