@@ -1,0 +1,191 @@
+/* ==========================================================================
+   METROLOGIC - Start Inspection Upload View Stylesheet
+   ========================================================================== */
+
+.demo-scenario-strip {
+  background-color: #e0f2fe;
+  border: 1px solid #bae6fd;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.demo-strip-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0369a1;
+}
+
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.upload-card {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-subtle);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s;
+}
+
+.upload-card.highlight-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.upload-card-header {
+  margin-bottom: 14px;
+}
+
+.upload-card-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.5px;
+}
+
+.upload-card-header p {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Dropzone */
+.dropzone {
+  border: 2px dashed var(--border-dark);
+  border-radius: var(--radius-md);
+  background-color: #f8fafc;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.dropzone:hover, .dropzone.drag-over {
+  border-color: var(--primary-blue);
+  background-color: #eff6ff;
+}
+
+.dz-icon {
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.dz-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.dz-subtext {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.browse-link {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dz-formats {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  background-color: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+/* DZ Preview State */
+.dz-preview {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.dz-img {
+  max-width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background-color: #ffffff;
+}
+
+.dz-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.dz-filename {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dz-specs {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.dz-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+/* Footer Bar */
+.inspection-footer-bar {
+  background-color: var(--surface-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-card);
+}
+
+.inspection-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .upload-grid {
+    grid-template-columns: 1fr;
+  }
+}
