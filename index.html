@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -201,7 +201,7 @@
                 <div class="dz-meta">
                   <span class="dz-filename" id="name-front">front_panel.jpg</span>
                   <div class="dz-specs">
-                    <span id="size-front">1.2 MB</span> • <span id="dims-front">1200 x 1600</span>
+                    <span id="size-front">1.2 MB</span> â€¢ <span id="dims-front">1200 x 1600</span>
                   </div>
                 </div>
                 <div class="dz-actions">
@@ -237,7 +237,7 @@
                 <div class="dz-meta">
                   <span class="dz-filename" id="name-back">back_panel.jpg</span>
                   <div class="dz-specs">
-                    <span id="size-back">1.4 MB</span> • <span id="dims-back">1200 x 1600</span>
+                    <span id="size-back">1.4 MB</span> â€¢ <span id="dims-back">1200 x 1600</span>
                   </div>
                 </div>
                 <div class="dz-actions">
@@ -273,7 +273,7 @@
                 <div class="dz-meta">
                   <span class="dz-filename" id="name-side">side_panel.jpg</span>
                   <div class="dz-specs">
-                    <span id="size-side">0.9 MB</span> • <span id="dims-side">1200 x 1600</span>
+                    <span id="size-side">0.9 MB</span> â€¢ <span id="dims-side">1200 x 1600</span>
                   </div>
                 </div>
                 <div class="dz-actions">
@@ -334,27 +334,27 @@
             <!-- Processing Checklist Stages -->
             <ul class="stage-list" id="stage-list">
               <li class="stage-item" id="stage-1">
-                <span class="stage-icon">○</span>
+                <span class="stage-icon">â—‹</span>
                 <span class="stage-name">Images uploaded</span>
               </li>
               <li class="stage-item" id="stage-2">
-                <span class="stage-icon">○</span>
+                <span class="stage-icon">â—‹</span>
                 <span class="stage-name">OCR extraction</span>
               </li>
               <li class="stage-item" id="stage-3">
-                <span class="stage-icon">○</span>
+                <span class="stage-icon">â—‹</span>
                 <span class="stage-name">Candidate filtering</span>
               </li>
               <li class="stage-item" id="stage-4">
-                <span class="stage-icon">○</span>
+                <span class="stage-icon">â—‹</span>
                 <span class="stage-name">AI parsing</span>
               </li>
               <li class="stage-item" id="stage-5">
-                <span class="stage-icon">○</span>
+                <span class="stage-icon">â—‹</span>
                 <span class="stage-name">Evidence validation</span>
               </li>
               <li class="stage-item" id="stage-6">
-                <span class="stage-icon">○</span>
+                <span class="stage-icon">â—‹</span>
                 <span class="stage-name">Rule evaluation</span>
               </li>
             </ul>
@@ -424,7 +424,7 @@
               <div class="summary-header">
                 <h2 class="summary-title">INSPECTION RESULT</h2>
                 <div class="summary-status-banner status-banner-review" id="overall-status-banner">
-                  <span class="status-banner-icon" id="overall-status-icon">⚠️</span>
+                  <span class="status-banner-icon" id="overall-status-icon">âš ï¸</span>
                   <span class="status-banner-text" id="overall-status-title">REVIEW_REQUIRED</span>
                 </div>
               </div>
@@ -500,7 +500,7 @@
 
         <div class="drawer-field-group">
           <span class="drawer-label">Extracted Value</span>
-          <span class="drawer-value" id="drawer-extracted-val">₹120</span>
+          <span class="drawer-value" id="drawer-extracted-val">â‚¹120</span>
         </div>
 
         <div class="drawer-field-group">
@@ -549,6 +549,14 @@
       </div>
     </aside>
   </div>
+
+  <!-- Production Configuration
+       Override these values before app.js loads.
+       For local development, remove or override METROLOGIC_API_URL in the browser console. -->
+  <script>
+    window.METROLOGIC_API_URL = "https://metrologic.onrender.com";
+    window.METROLOGIC_DEMO_MODE = false;
+  </script>
 
   <!-- JavaScript Modules -->
   <script type="module" src="app.js"></script>
