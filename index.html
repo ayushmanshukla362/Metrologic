@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>METROLOGIC | Legal Metrology Inspection</title>
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <link rel="stylesheet" href="inspection.css">
+  <link rel="stylesheet" href="processing.css">
+  <link rel="stylesheet" href="result.css">
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Persistent Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <span class="brand-name">METROLOGIC</span>
+          <span class="brand-sub">Legal Metrology Inspection</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" id="nav-dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#inspection" class="nav-item" id="nav-inspection">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          <span>Start Inspection</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar">LM</div>
+          <div class="user-info">
+            <span class="user-name">Legal Metrology Officer</span>
+            <span class="user-role">Prototype Environment</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Persistent Header -->
+      <header class="app-header">
+        <div class="header-title-container">
+          <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div>
+            <h1 class="page-title" id="page-title">Dashboard</h1>
+            <p class="page-subtitle" id="page-subtitle">Package inspection overview</p>
+          </div>
+        </div>
+
+        <div class="header-status-container">
+          <div class="session-badge-container hidden" id="header-session-badge">
+            <span class="meta-label">Session:</span>
+            <code class="session-id-tag" id="active-session-id">ML-2026-00000</code>
+          </div>
+          <div class="status-indicator-badge" id="system-status-badge">
+            <span class="status-dot dot-demo"></span>
+            <span class="status-text" id="system-status-text">Demo Mode</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- View Container 1: Dashboard -->
+      <section class="view-section active" id="view-dashboard">
+        <div class="dashboard-metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Total Inspections</span>
+            <div class="metric-value-container">
+              <span class="metric-value" id="metric-total">24</span>
+            </div>
+            <span class="metric-subtext">Across current workstation</span>
+          </div>
+          
+          <div class="metric-card">
+            <span class="metric-label">Completed</span>
+            <div class="metric-value-container">
+              <span class="metric-value text-pass" id="metric-completed">18</span>
+            </div>
+            <span class="metric-subtext">Satisfied preliminary checks</span>
+          </div>
+
+          <div class="metric-card">
+            <span class="metric-label">Review Required</span>
+            <div class="metric-value-container">
+              <span class="metric-value text-review" id="metric-review">6</span>
+            </div>
+            <span class="metric-subtext">Officer verification required</span>
+          </div>
+
+          <div class="metric-card">
+            <span class="metric-label">Average Processing Time</span>
+            <div class="metric-value-container">
+              <span class="metric-value" id="metric-time">1.8s</span>
+            </div>
+            <span class="metric-subtext">OCR + rule evaluation</span>
+          </div>
+        </div>
+
+        <div class="dashboard-table-container">
+          <div class="table-header-bar">
+            <div>
+              <h2 class="table-title">Recent Inspection History</h2>
+              <p class="table-subtitle">Select an inspection to audit evidence and findings.</p>
+            </div>
+            <button class="btn btn-primary" id="btn-dashboard-start">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>+ Start Inspection</span>
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table-history">
+              <thead>
+                <tr>
+                  <th>Session ID</th>
+                  <th>Date / Time</th>
+                  <th>Product</th>
+                  <th>Status</th>
+                  <th>Processing Time</th>
+                  <th class="text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboard-table-body">
+                <!-- Dynamic inspection history rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- View Container 2: Start Inspection -->
+      <section class="view-section" id="view-inspection">
+        <div class="demo-scenario-strip">
+          <span class="demo-strip-label">Quick Demo Scenarios:</span>
+          <button class="btn btn-sm btn-outline" id="btn-load-demo-1">Scenario 1: Clean Package (PASS)</button>
+          <button class="btn btn-sm btn-outline" id="btn-load-demo-2">Scenario 2: Uncertain MRP (REVIEW)</button>
+          <button class="btn btn-sm btn-outline" id="btn-load-demo-3">Scenario 3: Conflicting MRP (REVIEW)</button>
+        </div>
+
+        <div class="upload-grid">
+          <!-- FRONT PANEL CARD -->
+          <div class="upload-card" id="card-front">
+            <div class="upload-card-header">
+              <h3>FRONT PANEL</h3>
+              <p>Primary face of the package</p>
+            </div>
+            <div class="dropzone" id="dropzone-front" data-panel="front">
+              <div class="dz-empty" id="dz-empty-front">
+                <div class="dz-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                </div>
+                <p class="dz-text">Drop image here</p>
+                <p class="dz-subtext">or <span class="browse-link">Browse from device</span></p>
+                <span class="dz-formats">JPG, PNG, WEBP</span>
+              </div>
+              <div class="dz-preview hidden" id="dz-preview-front">
+                <img src="" alt="Front Panel Preview" class="dz-img" id="img-front">
+                <div class="dz-meta">
+                  <span class="dz-filename" id="name-front">front_panel.jpg</span>
+                  <div class="dz-specs">
+                    <span id="size-front">1.2 MB</span> • <span id="dims-front">1200 x 1600</span>
+                  </div>
+                </div>
+                <div class="dz-actions">
+                  <button class="btn btn-sm btn-secondary btn-replace" data-panel="front">Replace</button>
+                  <button class="btn btn-sm btn-outline text-danger btn-remove" data-panel="front">Remove</button>
+                </div>
+              </div>
+              <input type="file" id="file-front" accept="image/jpeg,image/png,image/webp" class="file-input-hidden">
+            </div>
+          </div>
+
+          <!-- BACK PANEL CARD -->
+          <div class="upload-card" id="card-back">
+            <div class="upload-card-header">
+              <h3>BACK PANEL</h3>
+              <p>Declarations and supporting information</p>
+            </div>
+            <div class="dropzone" id="dropzone-back" data-panel="back">
+              <div class="dz-empty" id="dz-empty-back">
+                <div class="dz-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                </div>
+                <p class="dz-text">Drop image here</p>
+                <p class="dz-subtext">or <span class="browse-link">Browse from device</span></p>
+                <span class="dz-formats">JPG, PNG, WEBP</span>
+              </div>
+              <div class="dz-preview hidden" id="dz-preview-back">
+                <img src="" alt="Back Panel Preview" class="dz-img" id="img-back">
+                <div class="dz-meta">
+                  <span class="dz-filename" id="name-back">back_panel.jpg</span>
+                  <div class="dz-specs">
+                    <span id="size-back">1.4 MB</span> • <span id="dims-back">1200 x 1600</span>
+                  </div>
+                </div>
+                <div class="dz-actions">
+                  <button class="btn btn-sm btn-secondary btn-replace" data-panel="back">Replace</button>
+                  <button class="btn btn-sm btn-outline text-danger btn-remove" data-panel="back">Remove</button>
+                </div>
+              </div>
+              <input type="file" id="file-back" accept="image/jpeg,image/png,image/webp" class="file-input-hidden">
+            </div>
+          </div>
+
+          <!-- SIDE PANEL CARD -->
+          <div class="upload-card" id="card-side">
+            <div class="upload-card-header">
+              <h3>SIDE PANEL</h3>
+              <p>Side / additional package information</p>
+            </div>
+            <div class="dropzone" id="dropzone-side" data-panel="side">
+              <div class="dz-empty" id="dz-empty-side">
+                <div class="dz-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                </div>
+                <p class="dz-text">Drop image here</p>
+                <p class="dz-subtext">or <span class="browse-link">Browse from device</span></p>
+                <span class="dz-formats">JPG, PNG, WEBP</span>
+              </div>
+              <div class="dz-preview hidden" id="dz-preview-side">
+                <img src="" alt="Side Panel Preview" class="dz-img" id="img-side">
+                <div class="dz-meta">
+                  <span class="dz-filename" id="name-side">side_panel.jpg</span>
+                  <div class="dz-specs">
+                    <span id="size-side">0.9 MB</span> • <span id="dims-side">1200 x 1600</span>
+                  </div>
+                </div>
+                <div class="dz-actions">
+                  <button class="btn btn-sm btn-secondary btn-replace" data-panel="side">Replace</button>
+                  <button class="btn btn-sm btn-outline text-danger btn-remove" data-panel="side">Remove</button>
+                </div>
+              </div>
+              <input type="file" id="file-side" accept="image/jpeg,image/png,image/webp" class="file-input-hidden">
+            </div>
+          </div>
+        </div>
+
+        <div class="inspection-footer-bar">
+          <div class="inspection-note">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>Use three views of the same physical package for spatial cross-validation.</span>
+          </div>
+          <button class="btn btn-primary btn-lg" id="btn-run-analysis" disabled>
+            <span>RUN ANALYSIS</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- View Container 3: Processing Screen -->
+      <section class="view-section" id="view-processing">
+        <div class="processing-container">
+          <div class="processing-card">
+            <div class="processing-header">
+              <div class="spinner-large" id="processing-spinner"></div>
+              <h2>Analyzing Package</h2>
+              <p>MetroLogic is extracting package information and evaluating the selected compliance requirements.</p>
+            </div>
+
+            <!-- Quality Failure Alert Container -->
+            <div class="quality-alert-banner hidden" id="quality-alert-banner">
+              <div class="alert-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </div>
+              <div class="alert-content">
+                <h4 id="quality-alert-title">Image Quality Insufficient</h4>
+                <p id="quality-alert-text">Image quality is insufficient for reliable analysis. Please replace this image.</p>
+              </div>
+              <button class="btn btn-sm btn-primary" id="btn-replace-quality-img">Replace Image</button>
+            </div>
+
+            <!-- Processing Checklist Stages -->
+            <ul class="stage-list" id="stage-list">
+              <li class="stage-item" id="stage-1">
+                <span class="stage-icon">○</span>
+                <span class="stage-name">Images uploaded</span>
+              </li>
+              <li class="stage-item" id="stage-2">
+                <span class="stage-icon">○</span>
+                <span class="stage-name">OCR extraction</span>
+              </li>
+              <li class="stage-item" id="stage-3">
+                <span class="stage-icon">○</span>
+                <span class="stage-name">Candidate filtering</span>
+              </li>
+              <li class="stage-item" id="stage-4">
+                <span class="stage-icon">○</span>
+                <span class="stage-name">AI parsing</span>
+              </li>
+              <li class="stage-item" id="stage-5">
+                <span class="stage-icon">○</span>
+                <span class="stage-name">Evidence validation</span>
+              </li>
+              <li class="stage-item" id="stage-6">
+                <span class="stage-icon">○</span>
+                <span class="stage-name">Rule evaluation</span>
+              </li>
+            </ul>
+
+            <div class="processing-error-actions hidden" id="processing-error-actions">
+              <button class="btn btn-primary" id="btn-retry-analysis">Try Again</button>
+              <button class="btn btn-outline" id="btn-return-dashboard">Return to Dashboard</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View Container 4: Inspection Result View -->
+      <section class="view-section" id="view-result">
+        <div class="result-layout">
+          <!-- LEFT: Package Evidence Viewer -->
+          <div class="result-left-column">
+            <div class="viewer-card">
+              <div class="viewer-header">
+                <div class="viewer-tabs">
+                  <button class="tab-btn active" data-panel="front" id="tab-front">FRONT</button>
+                  <button class="tab-btn" data-panel="back" id="tab-back">BACK</button>
+                  <button class="tab-btn" data-panel="side" id="tab-side">SIDE</button>
+                </div>
+                <div class="viewer-controls">
+                  <button class="icon-btn" id="btn-zoom-in" title="Zoom In">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      <line x1="11" y1="8" x2="11" y2="14"></line>
+                      <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                  </button>
+                  <button class="icon-btn" id="btn-zoom-out" title="Zoom Out">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                  </button>
+                  <button class="icon-btn" id="btn-zoom-fit" title="Fit to Viewport">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                    </svg>
+                  </button>
+                  <button class="btn btn-sm btn-outline" id="btn-zoom-reset">Reset</button>
+                </div>
+              </div>
+
+              <!-- Interactive Viewport -->
+              <div class="image-viewport" id="image-viewport">
+                <div class="viewport-stage" id="viewport-stage">
+                  <img id="result-package-img" src="" alt="Package View" class="viewport-img">
+                  <div class="evidence-overlay-layer" id="evidence-overlay-layer"></div>
+                </div>
+              </div>
+              <div class="viewer-footer">
+                <span class="active-panel-tag" id="active-panel-name">Panel: BACK PANEL</span>
+                <span class="bounding-status" id="bounding-status-text">Click any rule check or extracted field to focus evidence.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Compliance Summary -->
+          <div class="result-right-column">
+            <div class="summary-card">
+              <div class="summary-header">
+                <h2 class="summary-title">INSPECTION RESULT</h2>
+                <div class="summary-status-banner status-banner-review" id="overall-status-banner">
+                  <span class="status-banner-icon" id="overall-status-icon">⚠️</span>
+                  <span class="status-banner-text" id="overall-status-title">REVIEW_REQUIRED</span>
+                </div>
+              </div>
+
+              <p class="summary-desc" id="overall-status-desc">
+                One or more requirements require officer verification.
+              </p>
+
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-label">Session ID</span>
+                  <code class="meta-value" id="result-session-id">ML-2026-00123</code>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Processing Time</span>
+                  <span class="meta-value" id="result-proc-time">1.8s</span>
+                </div>
+              </div>
+
+              <div class="section-divider"></div>
+
+              <h3 class="subsection-title">SELECTED LEGAL METROLOGY CHECKS</h3>
+              <div class="rule-cards-container" id="rule-cards-container">
+                <!-- Dynamic 5 Legal Rule Cards -->
+              </div>
+
+              <div class="section-divider"></div>
+
+              <h3 class="subsection-title">EXTRACTED INFORMATION</h3>
+              <div class="table-responsive">
+                <table class="table-extracted">
+                  <thead>
+                    <tr>
+                      <th>Field</th>
+                      <th>Value</th>
+                      <th>Conf.</th>
+                      <th>Source</th>
+                    </tr>
+                  </thead>
+                  <tbody id="extracted-fields-body">
+                    <!-- Dynamic extracted fields rows -->
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="legal-notice-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Preliminary compliance assessment. Final enforcement decision remains with the authorized officer.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Slide-over Evidence Detail Drawer -->
+    <div class="drawer-backdrop hidden" id="drawer-backdrop"></div>
+    <aside class="evidence-drawer hidden" id="evidence-drawer">
+      <div class="drawer-header">
+        <h3>Evidence Detail</h3>
+        <button class="drawer-close-btn" id="btn-close-drawer" aria-label="Close drawer">&times;</button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="drawer-field-group">
+          <span class="drawer-label">Field</span>
+          <span class="drawer-value text-bold" id="drawer-field-name">MRP</span>
+        </div>
+
+        <div class="drawer-field-group">
+          <span class="drawer-label">Extracted Value</span>
+          <span class="drawer-value" id="drawer-extracted-val">₹120</span>
+        </div>
+
+        <div class="drawer-field-group">
+          <span class="drawer-label">Confidence</span>
+          <div class="confidence-badge-row">
+            <span class="badge" id="drawer-confidence-badge">63%</span>
+          </div>
+        </div>
+
+        <div class="drawer-field-group">
+          <span class="drawer-label">Status</span>
+          <span class="badge badge-review" id="drawer-status-badge">REVIEW_REQUIRED</span>
+        </div>
+
+        <div class="drawer-field-group">
+          <span class="drawer-label">Source Panel</span>
+          <span class="drawer-value" id="drawer-source-panel">Back Panel</span>
+        </div>
+
+        <div class="drawer-field-group">
+          <span class="drawer-label">Raw OCR Source</span>
+          <code class="raw-ocr-box" id="drawer-raw-ocr">M.R.P R$120</code>
+        </div>
+
+        <div class="drawer-field-group">
+          <span class="drawer-label">Reason / Assessment</span>
+          <p class="drawer-reason" id="drawer-reason">Low-confidence extraction (63%). Manual officer verification required.</p>
+        </div>
+
+        <div class="drawer-field-group">
+          <span class="drawer-label">Evidence ID</span>
+          <code class="meta-value" id="drawer-evidence-id">img_02:block_17</code>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button class="btn btn-primary btn-full" id="btn-drawer-open-image">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+          <span>Open in Image</span>
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
