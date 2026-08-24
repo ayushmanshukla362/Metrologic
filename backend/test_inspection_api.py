@@ -113,6 +113,36 @@ def test_non_image_upload_returns_400(client):
     assert response.status_code == 400
 
 
+def test_cors_preflight_allows_local_frontend_origin(client):
+    response = client.options(
+        "/api/inspection",
+        headers={
+            "Origin": "http://127.0.0.1:5500",
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "content-type",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "http://127.0.0.1:5500"
+    )
+    assert "POST" in response.headers["access-control-allow-methods"]
+    assert "Content-Type" in response.headers["access-control-allow-headers"]
+
+
+def test_cors_actual_response_allows_localhost_origin(client):
+    response = client.get(
+        "/api/health",
+        headers={"Origin": "http://localhost:5500"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "http://localhost:5500"
+    )
+
+
 def test_pipeline_failure_returns_controlled_500(client, monkeypatch):
     monkeypatch.setattr(main, "run_inspection", lambda *_args, **_kwargs: (_ for _ in ()).throw(RuntimeError("secret")))
     response = client.post(
