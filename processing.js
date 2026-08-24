@@ -76,64 +76,68 @@ export class ProcessingView {
     this.resetState();
 
     try {
-      // Stage 1: Init & Images Uploaded
-      this.setStageState(0, 'processing');
-      const sessionRes = await ApiClient.initSession();
-      const sessionId = sessionRes.session_id;
+      const activePanel = uploadData.activePanel || ['front', 'back', 'side'].find(panel => uploadData.panels[panel]?.file);
+      const selectedFile = activePanel ? uploadData.panels[activePanel]?.file : null;
 
-      // Upload panels
-      for (const panel of ['front', 'back', 'side']) {
-        const fileObj = uploadData.panels[panel].file;
-        await ApiClient.uploadImage(sessionId, panel, fileObj);
+      if (!selectedFile) {
+        const validationError = new Error('Please select an image before running analysis.');
+        validationError.code = 'INVALID_INPUT';
+        throw validationError;
       }
+
+      // Stage 1: Selected image ready
+      this.setStageState(0, 'processing');
       this.setStageState(0, 'completed');
 
-      // Stage 2: OCR Extraction
-      this.setStageState(1, 'processing');
-      await this.delay(350);
+      let result;
+
+      if (ApiClient.isDemoMode()) {
+        // Standalone demo mode remains fixture-driven and never calls the API.
+        this.setStageState(1, 'processing');
+        await this.delay(350);
+        result = ApiClient.getDemoResult(uploadData.scenarioKey);
+      } else {
+        // Real MVP flow: submit only the currently active panel's file.
+        this.setStageState(1, 'processing');
+        result = await ApiClient.runInspection(selectedFile);
+      }
+      await this.delay(150);
       this.setStageState(1, 'completed');
 
-      // Stage 3: Candidate Filtering
+      // The backend performs the remaining extraction/evaluation stages in
+      // one request. Keep the existing checklist animation for continuity.
       this.setStageState(2, 'processing');
       await this.delay(300);
       this.setStageState(2, 'completed');
 
-      // Stage 4: AI Parsing
       this.setStageState(3, 'processing');
-      await ApiClient.analyzeSession(sessionId, uploadData.scenarioKey);
-      await this.delay(400);
+      await this.delay(200);
       this.setStageState(3, 'completed');
 
-      // Stage 5: Evidence Validation
       this.setStageState(4, 'processing');
-      await this.delay(300);
+      await this.delay(180);
       this.setStageState(4, 'completed');
 
-      // Stage 6: Rule Evaluation
       this.setStageState(5, 'processing');
-      await this.delay(250);
+      await this.delay(180);
       this.setStageState(5, 'completed');
 
       // Completed -> Navigate to Result
       await this.delay(200);
-      this.app.openInspectionResult(sessionId, uploadData.scenarioKey);
+      this.app.openInspectionResult(result, uploadData);
 
     } catch (err) {
       this.spinner.style.display = 'none';
 
-      if (err.code === 'IMAGE_UNUSABLE') {
-        const affectedPanel = err.panel || 'back';
+      if (err.status === 400 || err.code === 'INVALID_INPUT') {
         this.setStageState(0, 'failed');
-        
-        this.alertTitle.textContent = 'Image Quality Insufficient';
-        this.alertText.textContent = `Image quality for ${affectedPanel.toUpperCase()} PANEL is insufficient for reliable analysis. Please replace this image.`;
-        this.btnReplaceQualityImg.setAttribute('data-target-panel', affectedPanel);
-        
+        this.alertTitle.textContent = 'Invalid Image or Input';
+        this.alertText.textContent = err.message || 'Please select a valid package image and try again.';
         this.alertBanner.classList.remove('hidden');
       } else {
-        this.setStageState(3, 'failed');
-        this.alertTitle.textContent = 'Analysis Failure';
-        this.alertText.textContent = 'Analysis could not be completed. ' + (err.message || 'Inspection service is currently unavailable.');
+        this.setStageState(1, 'failed');
+        this.alertTitle.textContent = err.status >= 500 ? 'Backend Processing Error' : 'Analysis Failure';
+        this.alertText.textContent = err.message || 'Inspection service is currently unavailable. Please try again.';
         this.alertBanner.classList.remove('hidden');
         this.errorActions.classList.remove('hidden');
       }

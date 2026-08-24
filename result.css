@@ -315,6 +315,20 @@
   color: var(--text-muted);
 }
 
+.rule-requirement,
+.rule-evidence {
+  font-size: 12px;
+  color: var(--text-main);
+  margin: 4px 0 0;
+}
+
+.rule-evidence {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
 /* Extracted Fields Table */
 .table-extracted {
   width: 100%;

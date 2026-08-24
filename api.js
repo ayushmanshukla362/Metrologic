@@ -1,15 +1,26 @@
 /**
  * METROLOGIC - API Client Layer
- * Centralized network communication module with DEMO_MODE fallback capability
+ * Real backend communication plus explicitly enabled standalone demo fixtures.
  */
 
 import { DEMO_SCENARIOS, DEMO_HISTORY } from './demo-data.js';
 
 export const API_BASE_URL = window.METROLOGIC_API_URL || "http://localhost:8000";
 
-// Global Demo Mode Toggle (Defaults to true for standalone hackathon prototype)
+// Demo mode is opt-in. Set window.METROLOGIC_DEMO_MODE = true before app.js loads
+// when running the standalone demo fixtures.
 if (window.METROLOGIC_DEMO_MODE === undefined) {
-  window.METROLOGIC_DEMO_MODE = true;
+  window.METROLOGIC_DEMO_MODE = false;
+}
+
+export class ApiError extends Error {
+  constructor(message, status = 0, details = null) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.details = details;
+    this.code = status >= 500 ? 'BACKEND_ERROR' : status >= 400 ? 'INVALID_INPUT' : 'NETWORK_ERROR';
+  }
 }
 
 export class ApiClient {
@@ -17,7 +28,7 @@ export class ApiClient {
     return !!window.METROLOGIC_DEMO_MODE;
   }
 
-  // Resolve image URLs (local data URLs, full URLs, or relative backend URLs)
+  // Resolve image URLs (local data URLs, full URLs, or relative backend URLs).
   static resolveImageUrl(url) {
     if (!url) return '';
     if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:')) {
@@ -26,131 +37,56 @@ export class ApiClient {
     return `${API_BASE_URL.replace(/\/$/, '')}/${url.replace(/^\//, '')}`;
   }
 
-  // Session Initialization
-  static async initSession() {
-    if (this.isDemoMode()) {
-      const demoId = `ML-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-      return { session_id: demoId, status: "created" };
-    }
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/session/init`, { method: "POST" });
-      if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-      return await res.json();
-    } catch (err) {
-      console.warn("Backend unavailable, falling back to Demo Mode:", err);
-      window.METROLOGIC_DEMO_MODE = true;
-      const demoId = `ML-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-      return { session_id: demoId, status: "created" };
-    }
-  }
-
-  // Upload Panel Image
-  static async uploadImage(sessionId, panelType, file) {
-    if (this.isDemoMode()) {
-      return {
-        session_id: sessionId,
-        panel: panelType,
-        filename: file.name || `${panelType}_panel.jpg`,
-        status: "uploaded"
-      };
-    }
-
+  /**
+   * Submit exactly one selected image to the frozen backend contract.
+   * Demo mode is intentionally not handled here; the real flow must never
+   * replace a backend response with demo data.
+   */
+  static async runInspection(file) {
     const formData = new FormData();
-    formData.append("image", file);
-    formData.append("panel", panelType);
+    formData.append('file', file);
 
-    const res = await fetch(`${API_BASE_URL}/api/session/${sessionId}/upload`, {
-      method: "POST",
-      body: formData
-    });
+    let response;
+    try {
+      response = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/api/inspection`, {
+        method: 'POST',
+        body: formData
+      });
+    } catch (error) {
+      throw new ApiError('The inspection service is currently unavailable. Please try again.', 0, error);
+    }
 
-    if (!res.ok) {
-      const errorJson = await res.json().catch(() => ({}));
-      if (res.status === 422 || errorJson.code === "IMAGE_UNUSABLE") {
-        const error = new Error(errorJson.message || "Image quality is insufficient for reliable analysis.");
-        error.code = "IMAGE_UNUSABLE";
-        error.panel = panelType;
-        throw error;
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      if (response.status >= 500) {
+        throw new ApiError('The inspection service could not process this image. Please try again.', response.status, payload);
       }
-      throw new Error(`Upload failed: ${res.statusText}`);
+      if (response.status >= 400) {
+        throw new ApiError('This image could not be accepted. Please upload a valid package image and try again.', response.status, payload);
+      }
+      throw new ApiError(`Inspection request failed (HTTP ${response.status}).`, response.status, payload);
     }
 
-    return await res.json();
+    return payload;
   }
 
-  // Trigger Analysis
-  static async analyzeSession(sessionId, activeScenario = "scenario2") {
-    if (this.isDemoMode()) {
-      return { session_id: sessionId, status: "processing" };
-    }
-
-    const res = await fetch(`${API_BASE_URL}/api/session/${sessionId}/analyze`, {
-      method: "POST"
-    });
-
-    if (!res.ok) throw new Error(`Analysis failed to start: ${res.statusText}`);
-    return await res.json();
-  }
-
-  // Retrieve Inspection Result
-  static async getResult(sessionId, activeScenarioKey = "scenario2") {
-    if (this.isDemoMode()) {
-      const scenario = DEMO_SCENARIOS[activeScenarioKey] || DEMO_SCENARIOS.scenario2;
-      return {
-        session_id: sessionId,
-        status: scenario.status,
-        processing_time: scenario.processingTime,
-        product: scenario.product,
-        images: scenario.images,
-        rules: scenario.rules
-      };
-    }
-
-    const res = await fetch(`${API_BASE_URL}/api/session/${sessionId}/result`);
-    if (!res.ok) throw new Error(`Could not fetch result: ${res.statusText}`);
-    const data = await res.json();
-
-    // Standardize backend response schema
+  // Demo-only result loader. This path is used only when the user explicitly
+  // enables METROLOGIC_DEMO_MODE.
+  static getDemoResult(scenarioKey = 'scenario2') {
+    const scenario = DEMO_SCENARIOS[scenarioKey] || DEMO_SCENARIOS.scenario2;
     return {
-      session_id: data.session_id || sessionId,
-      status: data.status || "REVIEW_REQUIRED",
-      processing_time: data.processing_time || "1.5s",
-      product: data.product || "Packaged Commodity",
-      images: {
-        front: { url: this.resolveImageUrl(data.images?.front?.url) },
-        back: { url: this.resolveImageUrl(data.images?.back?.url) },
-        side: { url: this.resolveImageUrl(data.images?.side?.url) }
-      },
-      rules: data.rules || []
+      session_id: scenario.sessionId,
+      overall_status: scenario.status,
+      processing_time: scenario.processingTime,
+      product: scenario.product,
+      images: scenario.images,
+      rules: scenario.rules
     };
   }
 
-  // Retrieve Specific Field Evidence
-  static async getEvidence(sessionId, field) {
-    if (this.isDemoMode()) {
-      const scenario = DEMO_SCENARIOS.scenario2;
-      const rule = scenario.rules.find(r => r.id === field || r.name.toLowerCase().includes(field.toLowerCase()));
-      return rule || null;
-    }
-
-    const res = await fetch(`${API_BASE_URL}/api/session/${sessionId}/evidence/${field}`);
-    if (!res.ok) throw new Error(`Could not fetch evidence for ${field}`);
-    return await res.json();
-  }
-
-  // Fetch Inspection History
+  // History is available only for the standalone demo until a history
+  // endpoint is included in the frozen backend contract.
   static async getHistory() {
-    if (this.isDemoMode()) {
-      return DEMO_HISTORY;
-    }
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/history`);
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
+    return this.isDemoMode() ? DEMO_HISTORY : null;
   }
 }

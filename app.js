@@ -159,10 +159,17 @@ class AppController {
     this.processingView.startProcessingPipeline(uploadData);
   }
 
-  // Open specific inspection result
-  openInspectionResult(sessionId, scenarioKey = 'scenario2') {
+  // Open a result returned by the real inspection request, or a demo history
+  // result when demo mode is explicitly enabled.
+  openInspectionResult(resultOrSession, uploadDataOrScenario = 'scenario2') {
+    const isResultPayload = resultOrSession && typeof resultOrSession === 'object';
+    const result = isResultPayload
+      ? resultOrSession
+      : ApiClient.getDemoResult(uploadDataOrScenario);
+    const uploadData = isResultPayload ? uploadDataOrScenario : null;
+
     this.navigateTo('result');
-    this.resultView.loadResult(sessionId, scenarioKey);
+    this.resultView.loadResult(result, uploadData);
   }
 
   // Handle Image Quality Retry Action

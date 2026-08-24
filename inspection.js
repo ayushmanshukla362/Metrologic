@@ -17,6 +17,7 @@ export class InspectionView {
     };
 
     this.activeScenarioKey = 'scenario2'; // Default scenario for demo analysis
+    this.activePanel = null;
 
     this.btnRunAnalysis = document.getElementById('btn-run-analysis');
     
@@ -54,11 +55,13 @@ export class InspectionView {
       // Click to browse
       dropzone.addEventListener('click', (e) => {
         if (e.target.closest('.btn-replace') || e.target.closest('.btn-remove')) return;
+        this.selectActivePanel(panel);
         fileInput.click();
       });
 
       fileInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {
+          this.selectActivePanel(panel);
           this.handleFileSelect(panel, e.target.files[0]);
         }
       });
@@ -67,6 +70,7 @@ export class InspectionView {
       const card = document.getElementById(`card-${panel}`);
       card.querySelector('.btn-replace').addEventListener('click', (e) => {
         e.stopPropagation();
+        this.selectActivePanel(panel);
         fileInput.click();
       });
 
@@ -115,6 +119,7 @@ export class InspectionView {
   // Update card UI state
   setPanelState(panel, file, previewUrl, meta) {
     this.panels[panel] = { file, previewUrl, meta };
+    this.selectActivePanel(panel);
 
     const dzEmpty = document.getElementById(`dz-empty-${panel}`);
     const dzPreview = document.getElementById(`dz-preview-${panel}`);
@@ -148,6 +153,9 @@ export class InspectionView {
     dzEmpty.classList.remove('hidden');
     dzPreview.classList.add('hidden');
 
+    if (this.activePanel === panel) {
+      this.activePanel = ['front', 'back', 'side'].find(p => this.panels[p].file) || null;
+    }
     this.checkFormCompletion();
   }
 
@@ -160,10 +168,15 @@ export class InspectionView {
     }
   }
 
-  // Check if all 3 panel images exist
+  // The frozen backend accepts one image. Keep all three upload cards, but
+  // enable analysis once at least one panel has a file.
   checkFormCompletion() {
-    const isComplete = !!(this.panels.front.file && this.panels.back.file && this.panels.side.file);
-    this.btnRunAnalysis.disabled = !isComplete;
+    const hasSelectedImage = ['front', 'back', 'side'].some(panel => !!this.panels[panel].file);
+    this.btnRunAnalysis.disabled = !hasSelectedImage;
+  }
+
+  selectActivePanel(panel) {
+    this.activePanel = panel;
   }
 
   // Load Pre-packaged Demo Scenario
@@ -186,10 +199,17 @@ export class InspectionView {
 
   // Start analysis transition
   startAnalysis() {
-    if (!this.panels.front.file || !this.panels.back.file || !this.panels.side.file) return;
+    const selectedPanel = (this.activePanel && this.panels[this.activePanel]?.file)
+      ? this.activePanel
+      : ['front', 'back', 'side'].find(panel => this.panels[panel].file);
+    if (!selectedPanel || !this.panels[selectedPanel].file) {
+      alert('Please select an image before running analysis.');
+      return;
+    }
 
     this.app.startProcessing({
       panels: this.panels,
+      activePanel: selectedPanel,
       scenarioKey: this.activeScenarioKey
     });
   }

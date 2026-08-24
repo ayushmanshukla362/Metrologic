@@ -30,7 +30,7 @@ Right-click `index.html` in VSCode and select **Open with Live Server**.
 ### 1. Enabling / Disabling Demo Mode
 The application includes a standalone offline **Demo Mode** (`METROLOGIC_DEMO_MODE`) with generated SVG package panels and pre-configured test scenarios (Clean Pass, Uncertain MRP, Conflicting MRP).
 
-- **Default State**: Enabled (`true`)
+- **Default State**: Disabled (`false`), so the frozen backend is used by default.
 - To toggle Demo Mode or switch to a live backend, modify `index.html` or set it in your browser console:
 
 ```javascript
@@ -49,68 +49,55 @@ Set the backend base URL before `app.js` initializes:
   window.METROLOGIC_API_URL = "http://localhost:8000";
   window.METROLOGIC_DEMO_MODE = false; // Set to false when connecting to FastAPI
 </script>
-<script type="module" src="js/app.js"></script>
+<script type="module" src="app.js"></script>
 ```
 
 ---
 
 ## 📡 Expected API Endpoints
 
-When connected to a real Python / FastAPI backend (`METROLOGIC_DEMO_MODE = false`), the frontend calls the following endpoints:
+When connected to the frozen Python / FastAPI backend (`METROLOGIC_DEMO_MODE = false`), the frontend calls one endpoint:
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/session/init` | Create new inspection session & return `session_id` |
-| `POST` | `/api/session/{id}/upload` | Upload image (`multipart/form-data` with `image` and `panel` = `front` \| `back` \| `side`) |
-| `POST` | `/api/session/{id}/analyze` | Trigger OCR, candidate filtering, AI parsing, and rule evaluation |
-| `GET` | `/api/session/{id}/result` | Fetch complete evaluation result & rule findings |
-| `GET` | `/api/session/{id}/evidence/{field}` | Fetch detailed evidence for a specific field |
+| `POST` | `/api/inspection` | Submit one selected image as multipart field `file` and receive the complete inspection result |
 
 ---
 
 ## 📦 Expected Result Schema
 
-The `GET /api/session/{id}/result` endpoint should return JSON structured as:
+The `POST /api/inspection` endpoint returns JSON structured as:
 
 ```json
 {
   "session_id": "ML-2026-00123",
-  "status": "REVIEW_REQUIRED",
-  "processing_time": "1.8s",
-  "product": "Household Cleaner",
-  "images": {
-    "front": { "url": "/images/front.jpg" },
-    "back": { "url": "/images/back.jpg" },
-    "side": { "url": "/images/side.jpg" }
+  "overall_status": "REVIEW_REQUIRED",
+  "extracted_fields": {
+    "commodity_name": { "value": "Household Cleaner", "raw_source": "Commodity: Household Cleaner", "source_block_ids": ["img1:block2"], "confidence": 0.96 },
+    "net_quantity": { "value": 125, "unit": "g", "raw_source": "125 g", "source_block_ids": ["img1:block4"], "confidence": 0.98 },
+    "mfg_date": { "value": "01/2026", "raw_source": "Mfg Date: 01/2026", "source_block_ids": ["img2:block3"], "confidence": 0.95 },
+    "mrp": { "value": 449, "unit": "INR", "raw_source": "449.00", "source_block_ids": ["img1:block7"], "confidence": 0.63 },
+    "manufacturer": { "value": "Example Manufacturer", "raw_source": "Mfd & Pkd by: Example Manufacturer", "source_block_ids": ["img2:block8"], "confidence": 0.97 }
   },
-  "rules": [
+  "confidence": { "commodity_name": 0.96, "net_quantity": 0.98, "mfg_date": 0.95, "mrp": 0.63, "manufacturer": 0.97 },
+  "compliance_evaluations": [
     {
-      "id": "mrp_declaration",
-      "name": "MRP Declaration",
+      "rule_id": "LM-PCR-6-1-e",
       "status": "REVIEW_REQUIRED",
       "requirement": "Maximum Retail Price (MRP) must be clearly printed inclusive of all taxes.",
       "reason": "Low-confidence MRP extraction (63%). Officer verification required.",
-      "confidence": 0.63,
-      "panel": "back",
-      "box": [100, 360, 600, 80],
-      "evidenceId": "img_back:block_mrp",
-      "extractedValue": "₹120 (Uncertain)",
-      "rawOcr": "M.R.P R$120"
+      "evidence": ["img1:block7"]
     }
   ]
 }
 ```
-
-### Coordinate Formats Supported
-- **Absolute Coordinates**: `[x, y, width, height]` in natural image dimensions.
-- **Normalized Coordinates**: `[x1, y1, x2, y2]` where values range from `0.0` to `1.0`.
 
 ---
 
 ## 💡 Key Inspection Workflow
 
 1. **Dashboard**: View summary metrics and previous inspection logs.
-2. **Start Inspection**: Upload Front, Back, and Side panel images (or click Quick Demo Scenarios 1, 2, or 3).
+2. **Start Inspection**: Select one image from the Front, Back, or Side panel cards (or click Quick Demo Scenarios 1, 2, or 3). The current backend MVP processes one image per inspection.
 3. **Processing**: Watch stage-based checklist execution (Images uploaded → OCR → Candidate filtering → AI parsing → Evidence validation → Rule evaluation).
 4. **Inspection Result**:
    - Inspect overall status (`PASS`, `REVIEW_REQUIRED`, `FAIL`).
